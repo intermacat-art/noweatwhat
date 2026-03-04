@@ -261,69 +261,88 @@ export default function DetailPage() {
           </div>
         )}
 
-        {/* Parking */}
-        {(parkingLots.length > 0 || parkingLoading) && (
-          <div className="mb-10">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-black text-slate-800 tracking-tighter flex items-center">
-                <Car className="mr-2 text-orange-500" /> 推薦停車位
-              </h3>
-              <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                {parkingSource === 'tdx' ? 'TDX 即時' : 'Killer Feature'}
-              </span>
-            </div>
-            <div className="space-y-4">
-              {parkingLoading && (
+        {/* Parking — always show */}
+        <div className="mb-10">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-black text-slate-800 tracking-tighter flex items-center">
+              <Car className="mr-2 text-orange-500" /> 推薦停車位
+            </h3>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+              {parkingSource === 'tdx' ? 'TDX 即時' : parkingLoading ? '搜尋中...' : '停車資訊'}
+            </span>
+          </div>
+          <div className="space-y-4">
+            {parkingLoading && (
+              <>
                 <div className="bg-slate-50 rounded-3xl p-5 border border-slate-100 animate-pulse">
                   <div className="h-5 bg-slate-200 rounded w-2/3 mb-3" />
                   <div className="h-4 bg-slate-200 rounded w-1/2 mb-4" />
                   <div className="h-10 bg-slate-200 rounded-2xl" />
                 </div>
-              )}
-              {parkingLots.map((lot, idx) => (
-                <div
-                  key={idx}
-                  className="bg-slate-50 rounded-3xl p-5 border border-slate-100"
+                <div className="bg-slate-50 rounded-3xl p-5 border border-slate-100 animate-pulse">
+                  <div className="h-5 bg-slate-200 rounded w-1/2 mb-3" />
+                  <div className="h-4 bg-slate-200 rounded w-1/3 mb-4" />
+                  <div className="h-10 bg-slate-200 rounded-2xl" />
+                </div>
+              </>
+            )}
+            {!parkingLoading && parkingLots.length === 0 && (
+              <div className="bg-slate-50 rounded-3xl p-5 border border-slate-100 text-center">
+                <p className="text-slate-400 text-sm font-bold mb-2">附近暫無停車場資料</p>
+                <button
+                  onClick={() => {
+                    const addr = displayAddress || displayName;
+                    window.open(`https://www.google.com/maps/search/停車場+near+${encodeURIComponent(addr)}`, '_blank');
+                  }}
+                  className="text-orange-500 text-sm font-bold underline"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-slate-800 text-lg">
-                          {lot.name}
-                        </p>
-                        {idx === 0 && (
-                          <span className="text-[10px] bg-orange-100 text-orange-600 font-black px-2 py-0.5 rounded uppercase">
-                            Best
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center text-xs font-bold mt-1">
-                        <span className={lot.statusColor}>{lot.status}</span>
-                        <span className="mx-2 text-slate-200">|</span>
-                        <span className="text-slate-400">{lot.price}</span>
-                      </div>
+                  用 Google Maps 搜尋停車場
+                </button>
+              </div>
+            )}
+            {parkingLots.map((lot, idx) => (
+              <div
+                key={idx}
+                className="bg-slate-50 rounded-3xl p-5 border border-slate-100"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-slate-800 text-lg">
+                        {lot.name}
+                      </p>
+                      {idx === 0 && (
+                        <span className="text-[10px] bg-orange-100 text-orange-600 font-black px-2 py-0.5 rounded uppercase">
+                          Best
+                        </span>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-slate-300 font-black uppercase">
-                        步行
-                      </p>
-                      <p className="text-lg font-black text-slate-800">
-                        {lot.walkTime}
-                      </p>
+                    <div className="flex items-center text-xs font-bold mt-1">
+                      <span className={lot.statusColor}>{lot.status}</span>
+                      <span className="mx-2 text-slate-200">|</span>
+                      <span className="text-slate-400">{lot.price}</span>
                     </div>
                   </div>
-                  <button
-                    onClick={() => navigateToParking(lot)}
-                    className="w-full bg-white border border-slate-200 py-3 rounded-2xl text-slate-600 font-bold text-sm flex items-center justify-center hover:bg-slate-100 transition-colors"
-                  >
-                    <Navigation size={14} className="mr-2 text-slate-400" />{' '}
-                    導航此停車場
-                  </button>
+                  <div className="text-right">
+                    <p className="text-[10px] text-slate-300 font-black uppercase">
+                      步行
+                    </p>
+                    <p className="text-lg font-black text-slate-800">
+                      {lot.walkTime}
+                    </p>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <button
+                  onClick={() => navigateToParking(lot)}
+                  className="w-full bg-white border border-slate-200 py-3 rounded-2xl text-slate-600 font-bold text-sm flex items-center justify-center hover:bg-slate-100 transition-colors"
+                >
+                  <Navigation size={14} className="mr-2 text-slate-400" />{' '}
+                  導航此停車場
+                </button>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
 
         {/* Videos */}
         {rest?.videos && rest.videos.length > 0 && (

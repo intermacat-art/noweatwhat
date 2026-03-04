@@ -1,6 +1,19 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getCachedArea, saveCachedArea, type CachedPlace } from '../_lib/supabaseCache';
 
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+
+interface GooglePlaceResult {
+  placeId: string;
+  name: string;
+  rating: number;
+  priceLevel: string;
+  location: { latitude: number; longitude: number };
+  photoRefs: string[];
+  openNow: boolean | null;
+  userRatingsTotal: number;
+  address: string;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -17,21 +30,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'lat and lng are required' });
   }
 
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  const searchRadius = Number(radius);
+  const kw = keyword ? String(keyword) : '';
+
   try {
+    // 1) Check Supabase cache first
+    const cached = await getCachedArea(latitude, longitude, kw, searchRadius);
+    if (cached && cached.length > 0) {
+      const places: GooglePlaceResult[] = cached.map((c) => ({
+        placeId: c.place_id,
+        name: c.name,
+        rating: c.rating,
+        priceLevel: c.price_level,
+        location: { latitude: c.latitude, longitude: c.longitude },
+        photoRefs: c.photo_refs || [],
+        openNow: c.open_now,
+        userRatingsTotal: c.user_ratings_total,
+        address: c.address,
+      }));
+      res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+      return res.status(200).json({ places, source: 'cache' });
+    }
+
+    // 2) Cache miss — call Google Places API
     let url: string;
     let body: Record<string, unknown>;
     let fieldMask: string;
 
-    if (keyword) {
-      // Text Search (New) — different body format
+    if (kw) {
       url = 'https://places.googleapis.com/v1/places:searchText';
       body = {
-        textQuery: `${String(keyword)}`,
+        textQuery: kw,
         maxResultCount: 20,
         locationBias: {
           circle: {
-            center: { latitude: Number(lat), longitude: Number(lng) },
-            radius: Number(radius),
+            center: { latitude, longitude },
+            radius: searchRadius,
           },
         },
       };
@@ -47,15 +83,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         'places.formattedAddress',
       ].join(',');
     } else {
-      // Nearby Search (New)
       url = 'https://places.googleapis.com/v1/places:searchNearby';
       body = {
         includedTypes: ['restaurant'],
         maxResultCount: 20,
         locationRestriction: {
           circle: {
-            center: { latitude: Number(lat), longitude: Number(lng) },
-            radius: Number(radius),
+            center: { latitude, longitude },
+            radius: searchRadius,
           },
         },
       };
@@ -89,7 +124,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const data = await response.json();
-    const places = (data.places || []).map((place: Record<string, unknown>) => ({
+    const places: GooglePlaceResult[] = (data.places || []).map((place: Record<string, unknown>) => ({
       placeId: place.id,
       name: (place.displayName as Record<string, string>)?.text || '',
       rating: place.rating || 0,
@@ -103,8 +138,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       address: place.formattedAddress || '',
     }));
 
+    // 3) Save to Supabase cache (non-blocking)
+    const cacheData: CachedPlace[] = places.map((p) => ({
+      place_id: p.placeId,
+      name: p.name,
+      rating: p.rating,
+      price_level: p.priceLevel,
+      latitude: p.location.latitude,
+      longitude: p.location.longitude,
+      address: p.address,
+      photo_refs: p.photoRefs,
+      open_now: p.openNow,
+      user_ratings_total: p.userRatingsTotal,
+    }));
+    saveCachedArea(latitude, longitude, kw, searchRadius, cacheData).catch((err) => {
+      console.error('Cache save error:', err);
+    });
+
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
-    return res.status(200).json({ places });
+    return res.status(200).json({ places, source: 'google' });
   } catch (error) {
     console.error('Nearby search error:', error);
     return res.status(500).json({ error: 'Internal server error' });

@@ -6,8 +6,8 @@ import { fetchNearbyParking } from '../services/tdxService';
  * 取得餐廳附近的停車場資料
  * 優先使用 TDX API，失敗時 fallback 到 mock 資料
  */
-export function useParking(restaurant: Restaurant) {
-  const [lots, setLots] = useState<ParkingLot[]>(restaurant.parkingLots);
+export function useParking(restaurant: Restaurant | null | undefined) {
+  const [lots, setLots] = useState<ParkingLot[]>(restaurant?.parkingLots ?? []);
   const [loading, setLoading] = useState(false);
   const [source, setSource] = useState<'mock' | 'tdx'>('mock');
 
@@ -15,6 +15,7 @@ export function useParking(restaurant: Restaurant) {
     let cancelled = false;
 
     async function load() {
+      if (!restaurant) return;
       setLoading(true);
       try {
         const tdxLots = await fetchNearbyParking(
@@ -36,7 +37,7 @@ export function useParking(restaurant: Restaurant) {
 
     load();
     return () => { cancelled = true; };
-  }, [restaurant.id, restaurant.coordinates.lat, restaurant.coordinates.lng]);
+  }, [restaurant?.id, restaurant?.coordinates.lat, restaurant?.coordinates.lng]);
 
   return { lots, loading, source };
 }

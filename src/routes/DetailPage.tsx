@@ -71,7 +71,7 @@ export default function DetailPage() {
   // Check if this is a Google Place (passed via route state)
   const stateRest = (location.state as { restaurant?: Restaurant })?.restaurant;
   const isGooglePlace = id?.startsWith('google-');
-  const placeId = isGooglePlace ? id.replace('google-', '') : null;
+  const placeId = isGooglePlace ? id!.replace('google-', '') : null;
 
   const rest = isGooglePlace ? stateRest : mockRestaurants.find((r) => r.id === Number(id));
 

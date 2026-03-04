@@ -18,34 +18,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const body = {
-      includedTypes: ['restaurant'],
-      maxResultCount: 20,
-      locationRestriction: {
-        circle: {
-          center: { latitude: Number(lat), longitude: Number(lng) },
-          radius: Number(radius),
+    let url: string;
+    let body: Record<string, unknown>;
+    let fieldMask: string;
+
+    if (keyword) {
+      // Text Search (New) — different body format
+      url = 'https://places.googleapis.com/v1/places:searchText';
+      body = {
+        textQuery: `${String(keyword)}`,
+        maxResultCount: 20,
+        locationBias: {
+          circle: {
+            center: { latitude: Number(lat), longitude: Number(lng) },
+            radius: Number(radius),
+          },
         },
-      },
-      ...(keyword ? { textQuery: String(keyword) } : {}),
-    };
-
-    // Use Text Search if keyword provided, otherwise use Nearby Search
-    const url = keyword
-      ? 'https://places.googleapis.com/v1/places:searchText'
-      : 'https://places.googleapis.com/v1/places:searchNearby';
-
-    const fieldMask = [
-      'places.id',
-      'places.displayName',
-      'places.rating',
-      'places.priceLevel',
-      'places.location',
-      'places.photos',
-      'places.currentOpeningHours',
-      'places.userRatingCount',
-      'places.formattedAddress',
-    ].join(',');
+      };
+      fieldMask = [
+        'places.id',
+        'places.displayName',
+        'places.rating',
+        'places.priceLevel',
+        'places.location',
+        'places.photos',
+        'places.currentOpeningHours',
+        'places.userRatingCount',
+        'places.formattedAddress',
+      ].join(',');
+    } else {
+      // Nearby Search (New)
+      url = 'https://places.googleapis.com/v1/places:searchNearby';
+      body = {
+        includedTypes: ['restaurant'],
+        maxResultCount: 20,
+        locationRestriction: {
+          circle: {
+            center: { latitude: Number(lat), longitude: Number(lng) },
+            radius: Number(radius),
+          },
+        },
+      };
+      fieldMask = [
+        'places.id',
+        'places.displayName',
+        'places.rating',
+        'places.priceLevel',
+        'places.location',
+        'places.photos',
+        'places.currentOpeningHours',
+        'places.userRatingCount',
+        'places.formattedAddress',
+      ].join(',');
+    }
 
     const response = await fetch(url, {
       method: 'POST',

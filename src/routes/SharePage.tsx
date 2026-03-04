@@ -58,20 +58,20 @@ export default function SharePage() {
       });
       const response = await fetch(dataUrl);
       const blob = await response.blob();
-      const file = new File([blob], '現在吃什麼-分享.png', {
+      const file = new File([blob], '現在要吃啥-分享.png', {
         type: 'image/png',
       });
 
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({
-          title: '現在吃什麼',
+          title: '現在要吃啥',
           text: '看看我吃了什麼！',
           files: [file],
         });
       } else {
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = '現在吃什麼-分享.png';
+        a.download = '現在要吃啥-分享.png';
         a.click();
       }
     } catch {
@@ -150,7 +150,7 @@ export default function SharePage() {
             <div className="mt-auto pt-6 flex flex-col items-center opacity-40">
               <div className="h-px w-12 bg-slate-300 mb-4" />
               <p className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase">
-                現在吃什麼 . App
+                現在要吃啥 . App
               </p>
             </div>
           </div>

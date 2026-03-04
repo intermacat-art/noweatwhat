@@ -17,7 +17,7 @@ export default function LoginPage() {
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-40 bg-orange-600/8 rounded-full blur-[80px]" />
       <div className="relative z-10">
         <h1 className="text-5xl font-black text-white tracking-tighter mb-4">
-          現在吃什麼<span className="text-orange-500">.</span>
+          現在要吃啥<span className="text-orange-500">.</span>
         </h1>
         <p className="text-slate-400 mb-12 leading-relaxed font-medium">
           專為台灣胃設計的美食決策器

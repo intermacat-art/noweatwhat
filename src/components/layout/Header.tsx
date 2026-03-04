@@ -17,7 +17,7 @@ export default function Header() {
           className="text-2xl font-black text-slate-800 tracking-tighter cursor-pointer"
           onClick={() => navigate('/')}
         >
-          現在吃什麼<span className="text-orange-500">.</span>
+          現在要吃啥<span className="text-orange-500">.</span>
         </h1>
         <button
           onClick={requestLocation}

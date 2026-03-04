@@ -1,9 +1,11 @@
 import { X, Heart, Dog } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useFilterStore } from '../../stores/filterStore';
 import { useMemo } from 'react';
 import { mockRestaurants } from '../../data/restaurants';
 
 export default function FilterModal() {
+  const navigate = useNavigate();
   const { price, tags, togglePrice, toggleTag, setShowModal } = useFilterStore();
 
   const filteredCount = useMemo(() => {
@@ -13,6 +15,13 @@ export default function FilterModal() {
       return true;
     }).length;
   }, [price, tags]);
+
+  const hasFilters = price.length > 0 || tags.length > 0;
+
+  const handleViewResults = () => {
+    setShowModal(false);
+    navigate('/search');
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-end">
@@ -76,10 +85,10 @@ export default function FilterModal() {
           </div>
         </div>
         <button
-          onClick={() => setShowModal(false)}
+          onClick={hasFilters ? handleViewResults : () => setShowModal(false)}
           className="w-full bg-orange-500 text-white font-black py-5 rounded-3xl mt-10 shadow-xl shadow-orange-200 active:scale-95 transition-all text-lg"
         >
-          查看結果 ({filteredCount})
+          {hasFilters ? `查看結果 (${filteredCount})` : '關閉'}
         </button>
       </div>
     </div>

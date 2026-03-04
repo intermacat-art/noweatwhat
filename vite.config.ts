@@ -10,8 +10,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: '現在吃什麼',
-        short_name: '吃什麼',
+        name: '現在要吃啥',
+        short_name: '要吃啥',
         description: '專為台灣胃設計的美食決策器，結合即時停車場資訊',
         theme_color: '#0f172a',
         background_color: '#f8fafc',

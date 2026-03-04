@@ -11,6 +11,7 @@ import DiceResultPage from './routes/DiceResultPage';
 import MonthlyReportPage from './routes/MonthlyReportPage';
 import CheckInPage from './routes/CheckInPage';
 import SettingsPage from './routes/SettingsPage';
+import SearchPage from './routes/SearchPage';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -33,6 +34,7 @@ export default function App() {
         >
           <Route index element={<HomePage />} />
           <Route path="category/:name" element={<ListPage />} />
+          <Route path="search" element={<SearchPage />} />
           <Route path="restaurant/:id" element={<DetailPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="share/:historyId" element={<SharePage />} />

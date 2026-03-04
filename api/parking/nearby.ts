@@ -37,8 +37,8 @@ interface TDXCarPark {
 
 interface TDXAvailability {
   CarParkID: string;
-  AvailableSpaces?: number;
-  TotalSpaces?: number;
+  NumberOfAvailableSpaces?: number;
+  NumberOfSpaces?: number;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -77,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Try to fetch live availability
     let availMap: Record<string, TDXAvailability> = {};
     try {
-      const availUrl = `${TDX_BASE}/api/advanced/v1/Parking/OffStreet/CarPark/Availability/NearBy`;
+      const availUrl = `${TDX_BASE}/api/advanced/v1/Parking/OffStreet/ParkingAvailability/NearBy`;
       const availRes = await fetch(`${availUrl}?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -94,8 +94,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       let status = '查詢中';
       let statusColor = 'text-slate-400';
 
-      if (avail && avail.AvailableSpaces !== undefined) {
-        const spaces = avail.AvailableSpaces;
+      if (avail && avail.NumberOfAvailableSpaces !== undefined && avail.NumberOfAvailableSpaces >= 0) {
+        const spaces = avail.NumberOfAvailableSpaces;
         if (spaces > 20) {
           status = `充裕 (${spaces}位)`;
           statusColor = 'text-green-500';

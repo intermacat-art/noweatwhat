@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ].join(',');
 
     const response = await fetch(
-      `https://places.googleapis.com/v1/places/${placeId}`,
+      `https://places.googleapis.com/v1/places/${placeId}?languageCode=zh-TW`,
       {
         headers: {
           'X-Goog-Api-Key': GOOGLE_API_KEY,

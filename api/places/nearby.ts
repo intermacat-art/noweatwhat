@@ -64,6 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body = {
         textQuery: kw,
         maxResultCount: 20,
+        languageCode: 'zh-TW',
         locationBias: {
           circle: {
             center: { latitude, longitude },
@@ -87,6 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body = {
         includedTypes: ['restaurant'],
         maxResultCount: 20,
+        languageCode: 'zh-TW',
         locationRestriction: {
           circle: {
             center: { latitude, longitude },

@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getCachedArea, saveCachedArea, type CachedPlace } from '../_lib/supabaseCache';
+import { getCachedArea, saveCachedArea, type CachedPlace } from '../_lib/supabaseCache.js';
 
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 

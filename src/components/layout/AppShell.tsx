@@ -14,7 +14,7 @@ export default function AppShell() {
   const hideNav = isSharePage || isDetailPage || isCheckInPage || isSettingsPage;
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 max-w-md mx-auto shadow-2xl font-sans overflow-hidden border-x relative">
+    <div className="flex flex-col h-screen bg-app max-w-md mx-auto shadow-2xl font-sans overflow-hidden border-x border-warm-200/50 relative">
       {!isSharePage && !isCheckInPage && <Header />}
       {showModal && <FilterModal />}
       <div className="flex-1 overflow-y-auto no-scrollbar pb-24">

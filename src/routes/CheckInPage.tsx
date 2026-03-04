@@ -65,9 +65,9 @@ export default function CheckInPage() {
   const canSave = name.trim().length > 0;
 
   return (
-    <div className="animate-slide-in-bottom bg-white min-h-full">
+    <div className="animate-slide-in-bottom bg-app min-h-full bg-dots">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-20 glass-warm border-b border-warm-200/40 px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
           className="p-2 bg-slate-100 rounded-xl"
@@ -92,7 +92,7 @@ export default function CheckInPage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-full aspect-[4/3] rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-orange-300 active:scale-[0.98]"
+            className="w-full aspect-[4/3] rounded-3xl border-2 border-dashed border-warm-200 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden transition-all hover:border-orange-300 active:scale-[0.98]"
           >
             {photoPreview ? (
               <img
@@ -158,7 +158,7 @@ export default function CheckInPage() {
       </div>
 
       {/* Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-slate-100 z-40 pb-safe">
+      <div className="fixed bottom-0 left-0 right-0 p-6 glass-warm border-t border-warm-200/40 z-40 pb-safe">
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSave}

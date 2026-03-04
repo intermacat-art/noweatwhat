@@ -2,6 +2,27 @@
 
 @theme {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --color-warm-50: #fefcf9;
+  --color-warm-100: #fdf6ed;
+  --color-warm-200: #f8ead5;
+}
+
+/* Warm textured background */
+.bg-app {
+  background: linear-gradient(165deg, #fefcf9 0%, #fdf6ed 40%, #fef5e7 70%, #fefcf9 100%);
+}
+
+/* Subtle dot pattern overlay */
+.bg-dots {
+  background-image: radial-gradient(circle, #e8ddd0 0.6px, transparent 0.6px);
+  background-size: 24px 24px;
+}
+
+/* Warm glass morphism for header/nav */
+.glass-warm {
+  background: rgba(254, 252, 249, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 /* Safe area for PWA */

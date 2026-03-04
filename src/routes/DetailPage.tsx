@@ -207,7 +207,7 @@ export default function DetailPage() {
       </div>
 
       {/* Content */}
-      <div className="p-8 bg-white -mt-8 rounded-t-[48px] relative z-10 min-h-[500px]">
+      <div className="p-8 bg-app bg-dots -mt-8 rounded-t-[48px] relative z-10 min-h-[500px]">
         {/* Opening Hours */}
         {openingHours.length > 0 && (
           <div className="mb-10">
@@ -399,7 +399,7 @@ export default function DetailPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-slate-100 z-40 pb-safe">
+      <div className="absolute bottom-0 left-0 right-0 p-6 glass-warm border-t border-warm-200/40 z-40 pb-safe">
         <div className="flex gap-3">
           <button
             onClick={handleCheckIn}

@@ -40,10 +40,10 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="animate-slide-in-left bg-white min-h-full">
+    <div className="animate-slide-in-left bg-app min-h-full bg-dots">
       {/* User Header */}
       <div className="p-8 pt-12 text-center">
-        <div className="w-24 h-24 bg-slate-100 rounded-[40px] mx-auto flex items-center justify-center mb-4 text-4xl shadow-xl border-4 border-white">
+        <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-amber-50 rounded-[40px] mx-auto flex items-center justify-center mb-4 text-4xl shadow-xl border-4 border-white">
           🤠
         </div>
         <h2 className="text-3xl font-black text-slate-800 tracking-tighter">
@@ -56,13 +56,13 @@ export default function ProfilePage() {
 
       {/* Stats */}
       <div className="px-8 grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-slate-50 p-6 rounded-[32px] text-center border border-slate-100">
+        <div className="bg-white/60 backdrop-blur-sm p-6 rounded-[32px] text-center border border-warm-200/50">
           <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">
             本月探索
           </p>
           <p className="text-3xl font-black text-slate-800">{visits.length}</p>
         </div>
-        <div className="bg-slate-50 p-6 rounded-[32px] text-center border border-slate-100">
+        <div className="bg-white/60 backdrop-blur-sm p-6 rounded-[32px] text-center border border-warm-200/50">
           <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">
             預估花費
           </p>
@@ -114,7 +114,7 @@ export default function ProfilePage() {
           {visits.map((h) => (
             <div
               key={h.id}
-              className="bg-slate-50 rounded-3xl p-5 border border-slate-100 flex items-center justify-between group"
+              className="bg-white/60 backdrop-blur-sm rounded-3xl p-5 border border-warm-200/50 flex items-center justify-between group"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 {h.photo && <VisitPhoto photoId={h.photo} />}

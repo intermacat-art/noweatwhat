@@ -11,7 +11,7 @@ export default function Header() {
   const hasLocation = lat !== null;
 
   return (
-    <header className="bg-white/80 backdrop-blur-md px-6 py-5 flex items-center justify-between sticky top-0 z-30 border-b border-slate-100">
+    <header className="glass-warm px-6 py-5 flex items-center justify-between sticky top-0 z-30 border-b border-warm-200/40">
       <div>
         <h1
           className="text-2xl font-black text-slate-800 tracking-tighter cursor-pointer"

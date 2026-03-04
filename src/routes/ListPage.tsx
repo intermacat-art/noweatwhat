@@ -9,7 +9,7 @@ import type { CategoryName, Restaurant } from '../data/types';
 
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-[32px] p-4 flex gap-4 shadow-sm border border-slate-100 animate-pulse">
+    <div className="bg-white/70 backdrop-blur-sm rounded-[32px] p-4 flex gap-4 shadow-sm border border-warm-200/50 animate-pulse">
       <div className="w-24 h-24 rounded-2xl bg-slate-200" />
       <div className="flex-1 flex flex-col justify-between py-1">
         <div>
@@ -119,7 +119,7 @@ export default function ListPage() {
               navigate(`/restaurant/${rest.id}`);
             }
           }}
-          className="bg-white rounded-[32px] p-4 flex gap-4 shadow-sm border border-slate-100 active:scale-[0.98] transition-all cursor-pointer"
+          className="bg-white/70 backdrop-blur-sm rounded-[32px] p-4 flex gap-4 shadow-sm border border-warm-200/50 active:scale-[0.98] transition-all cursor-pointer"
         >
           <img
             src={rest.image}

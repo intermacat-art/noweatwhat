@@ -11,7 +11,7 @@ export default function BottomNav() {
   const isProfile = location.pathname === '/profile';
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-t border-slate-100 px-12 py-6 flex justify-around items-center absolute bottom-0 left-0 right-0 z-40 pb-safe">
+    <nav className="glass-warm border-t border-warm-200/40 px-12 py-6 flex justify-around items-center absolute bottom-0 left-0 right-0 z-40 pb-safe">
       <button
         onClick={() => navigate('/')}
         className={`flex flex-col items-center gap-1 ${

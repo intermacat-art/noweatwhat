@@ -69,9 +69,9 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="animate-slide-in-right bg-white min-h-full">
+    <div className="animate-slide-in-right bg-app min-h-full bg-dots">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 py-4 flex items-center gap-3">
+      <div className="sticky top-0 z-20 glass-warm border-b border-warm-200/40 px-6 py-4 flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
           className="p-2 bg-slate-100 rounded-xl"

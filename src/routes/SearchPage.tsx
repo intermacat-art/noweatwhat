@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Star, Car, MapPin, Clock, Filter as FilterIcon } from 'lucide-react';
+import { ChevronRight, Star, Car, Clock, Filter as FilterIcon } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords } from '../stores/locationStore';

@@ -4,7 +4,7 @@ import { ChevronRight, Star, Car, MapPin, Clock } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords } from '../stores/locationStore';
-import { searchNearby } from '../services/placesService';
+import { searchNearby, distanceMeters } from '../services/placesService';
 import type { CategoryName, Restaurant } from '../data/types';
 
 function SkeletonCard() {
@@ -53,21 +53,23 @@ export default function ListPage() {
     return () => { cancelled = true; };
   }, [lat, lng, category]);
 
-  // Fallback to mock data if Google fails
+  // Fallback to mock data if Google fails — also sort by distance
   const mockFiltered = useMemo(() => {
-    return mockRestaurants.filter((r) => {
-      if (category && r.category !== category) return false;
-      if (price.length > 0 && !price.includes(r.priceLevel)) return false;
-      if (tags.length > 0 && !tags.every((tag) => r.tags.includes(tag))) return false;
-      return true;
-    });
-  }, [category, price, tags]);
+    return mockRestaurants
+      .map((r) => ({ ...r, distanceMeters: distanceMeters(lat, lng, r.coordinates.lat, r.coordinates.lng) }))
+      .filter((r) => {
+        if (category && r.category !== category) return false;
+        if (price.length > 0 && !price.includes(r.priceLevel)) return false;
+        if (tags.length > 0 && !tags.every((tag) => r.tags.includes(tag))) return false;
+        return true;
+      })
+      .sort((a, b) => a.distanceMeters - b.distanceMeters);
+  }, [category, price, tags, lat, lng]);
 
   const displayList = useMemo(() => {
-    const list = useGoogle ? googlePlaces : mockFiltered;
-    if (!useGoogle) return list;
-    // Apply price filter to Google results too
-    return list.filter((r) => {
+    if (!useGoogle) return mockFiltered;
+    // Google results already sorted by distance from placesService
+    return googlePlaces.filter((r) => {
       if (price.length > 0 && !price.includes(r.priceLevel)) return false;
       return true;
     });

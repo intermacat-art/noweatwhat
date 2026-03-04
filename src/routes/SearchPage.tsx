@@ -4,7 +4,7 @@ import { ChevronRight, Star, Car, MapPin, Clock, Filter as FilterIcon } from 'lu
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords } from '../stores/locationStore';
-import { searchNearby } from '../services/placesService';
+import { searchNearby, distanceMeters } from '../services/placesService';
 import type { Restaurant } from '../data/types';
 
 function SkeletonCard() {
@@ -24,8 +24,11 @@ function SkeletonCard() {
 
 export default function SearchPage() {
   const navigate = useNavigate();
-  const { price, tags, setShowModal } = useFilterStore();
+  const { price, tags, distance, setShowModal } = useFilterStore();
   const { lat, lng } = useCoords();
+
+  // Use distance filter as API radius, default 1500m
+  const searchRadius = distance > 0 ? distance : 1500;
 
   const [googlePlaces, setGooglePlaces] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +37,7 @@ export default function SearchPage() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    searchNearby(lat, lng, undefined, 1500)
+    searchNearby(lat, lng, undefined, searchRadius)
       .then((places) => {
         if (!cancelled) {
           setGooglePlaces(places);
@@ -49,26 +52,38 @@ export default function SearchPage() {
         }
       });
     return () => { cancelled = true; };
-  }, [lat, lng]);
+  }, [lat, lng, searchRadius]);
 
   const mockFiltered = useMemo(() => {
-    return mockRestaurants.filter((r) => {
-      if (price.length > 0 && !price.includes(r.priceLevel)) return false;
-      if (tags.length > 0 && !tags.every((tag) => r.tags.includes(tag))) return false;
-      return true;
-    });
-  }, [price, tags]);
+    return mockRestaurants
+      .map((r) => ({
+        ...r,
+        distanceMeters: distanceMeters(lat, lng, r.coordinates.lat, r.coordinates.lng),
+      }))
+      .filter((r) => {
+        if (price.length > 0 && !price.includes(r.priceLevel)) return false;
+        if (tags.length > 0 && !tags.every((tag) => r.tags.includes(tag))) return false;
+        if (distance > 0 && r.distanceMeters > distance) return false;
+        return true;
+      })
+      .sort((a, b) => a.distanceMeters - b.distanceMeters);
+  }, [price, tags, distance, lat, lng]);
 
   const displayList = useMemo(() => {
-    const list = useGoogle ? googlePlaces : mockFiltered;
-    if (!useGoogle) return list;
-    return list.filter((r) => {
-      if (price.length > 0 && !price.includes(r.priceLevel)) return false;
-      return true;
-    });
-  }, [useGoogle, googlePlaces, mockFiltered, price]);
+    if (!useGoogle) return mockFiltered;
+    let list = googlePlaces;
+    if (price.length > 0) {
+      list = list.filter((r) => price.includes(r.priceLevel));
+    }
+    if (distance > 0) {
+      list = list.filter((r) => (r.distanceMeters ?? Infinity) <= distance);
+    }
+    return list;
+  }, [useGoogle, googlePlaces, mockFiltered, price, distance]);
 
+  const distLabel = distance > 0 ? (distance >= 1000 ? '1km' : `${distance}m`) : '';
   const filterLabel = [
+    ...(distLabel ? [`${distLabel}內`] : []),
     ...(price.length > 0 ? [price.map((p) => '$'.repeat(p)).join(' ')] : []),
     ...(tags.includes('date') ? ['約會'] : []),
     ...(tags.includes('pet') ? ['寵物'] : []),
@@ -118,7 +133,7 @@ export default function SearchPage() {
         <div className="text-center py-16 text-slate-400">
           <p className="text-4xl mb-4">🍽️</p>
           <p className="font-bold">沒有符合條件的餐廳</p>
-          <p className="text-sm mt-2">試試調整篩選條件</p>
+          <p className="text-sm mt-2">試試調整篩選條件或擴大距離</p>
         </div>
       )}
 
@@ -169,11 +184,6 @@ export default function SearchPage() {
               {rest.parkingLots[0] && (
                 <span className="bg-slate-100 text-slate-500 text-[10px] px-2 py-1 rounded-lg font-bold flex items-center">
                   <Car size={10} className="mr-1" /> {rest.parkingLots[0].status}
-                </span>
-              )}
-              {rest.placeId && (
-                <span className="text-[10px] font-bold text-slate-300 flex items-center">
-                  <MapPin size={10} className="mr-1" /> Google
                 </span>
               )}
             </div>

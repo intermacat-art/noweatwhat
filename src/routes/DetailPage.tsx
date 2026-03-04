@@ -88,8 +88,10 @@ export default function DetailPage() {
     }
   }, [placeId]);
 
-  const mockForParking = rest && !isGooglePlace ? rest : null;
-  const { lots: parkingLots, loading: parkingLoading, source: parkingSource } = useParking(mockForParking);
+  // All restaurants get parking — Google Places uses coordinates, mock uses fallback lots
+  const parkingCoords = rest?.coordinates ?? (googleDetail ? { lat: googleDetail.location.latitude, lng: googleDetail.location.longitude } : null);
+  const parkingTarget = parkingCoords ? { lat: parkingCoords.lat, lng: parkingCoords.lng, fallbackLots: rest?.parkingLots ?? [] } : null;
+  const { lots: parkingLots, loading: parkingLoading, source: parkingSource } = useParking(parkingTarget);
 
   if (!rest && !isGooglePlace) {
     return (
@@ -259,8 +261,8 @@ export default function DetailPage() {
           </div>
         )}
 
-        {/* Parking - for mock restaurants */}
-        {!isGooglePlace && (
+        {/* Parking */}
+        {(parkingLots.length > 0 || parkingLoading) && (
           <div className="mb-10">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-black text-slate-800 tracking-tighter flex items-center">

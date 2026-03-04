@@ -35,14 +35,17 @@ function priceLevelToStr(level: number): string {
   return '$'.repeat(level);
 }
 
-function distanceStr(lat1: number, lng1: number, lat2: number, lng2: number): string {
+export function distanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371e3;
   const toRad = (d: number) => (d * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return d < 1000 ? `${Math.round(d)}m` : `${(d / 1000).toFixed(1)}km`;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function distanceStr(meters: number): string {
+  return meters < 1000 ? `${Math.round(meters)}m` : `${(meters / 1000).toFixed(1)}km`;
 }
 
 export function getPhotoUrl(photoRef: string, maxwidth = 800): string {
@@ -69,8 +72,9 @@ export async function searchNearby(
   if (!response.ok) throw new Error('Failed to fetch nearby places');
 
   const data = await response.json();
-  return (data.places as GooglePlace[]).map((place, idx) => {
+  const results = (data.places as GooglePlace[]).map((place, idx) => {
     const pl = priceLevelToNumber(place.priceLevel);
+    const dm = distanceMeters(lat, lng, place.location.latitude, place.location.longitude);
     return {
       id: 10000 + idx,
       name: place.name,
@@ -78,10 +82,11 @@ export async function searchNearby(
       rating: place.rating,
       priceLevel: pl,
       priceStr: priceLevelToStr(pl),
-      dist: distanceStr(lat, lng, place.location.latitude, place.location.longitude),
+      dist: distanceStr(dm),
+      distanceMeters: dm,
       address: place.address,
       coordinates: { lat: place.location.latitude, lng: place.location.longitude },
-      tags: [],
+      tags: [] as Restaurant['tags'],
       image: place.photoRefs[0] ? getPhotoUrl(place.photoRefs[0], 400) : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80',
       parkingLots: [],
       videos: [],
@@ -92,6 +97,9 @@ export async function searchNearby(
       userRatingsTotal: place.userRatingsTotal,
     };
   });
+  // Sort by distance, nearest first
+  results.sort((a, b) => a.distanceMeters! - b.distanceMeters!);
+  return results;
 }
 
 export async function getDetail(placeId: string): Promise<GooglePlaceDetail> {

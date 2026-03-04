@@ -51,6 +51,7 @@ export interface Restaurant {
   priceLevel: 1 | 2 | 3 | 4;
   priceStr: string;
   dist: string;
+  distanceMeters?: number;
   address: string;
   coordinates: { lat: number; lng: number };
   tags: RestaurantTag[];

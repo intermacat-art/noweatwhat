@@ -1,12 +1,20 @@
-import { X, Heart, Dog } from 'lucide-react';
+import { X, Heart, Dog, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFilterStore } from '../../stores/filterStore';
+import type { DistanceOption } from '../../stores/filterStore';
 import { useMemo } from 'react';
 import { mockRestaurants } from '../../data/restaurants';
 
+const DISTANCE_OPTIONS: { value: DistanceOption; label: string }[] = [
+  { value: 100, label: '100m' },
+  { value: 200, label: '200m' },
+  { value: 400, label: '400m' },
+  { value: 1000, label: '1km+' },
+];
+
 export default function FilterModal() {
   const navigate = useNavigate();
-  const { price, tags, togglePrice, toggleTag, setShowModal } = useFilterStore();
+  const { price, tags, distance, togglePrice, toggleTag, setDistance, setShowModal } = useFilterStore();
 
   const filteredCount = useMemo(() => {
     return mockRestaurants.filter((r) => {
@@ -16,7 +24,7 @@ export default function FilterModal() {
     }).length;
   }, [price, tags]);
 
-  const hasFilters = price.length > 0 || tags.length > 0;
+  const hasFilters = price.length > 0 || tags.length > 0 || distance > 0;
 
   const handleViewResults = () => {
     setShowModal(false);
@@ -36,6 +44,28 @@ export default function FilterModal() {
           </button>
         </div>
         <div className="space-y-8">
+          {/* Distance */}
+          <div>
+            <p className="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest flex items-center">
+              <MapPin size={14} className="mr-1.5" /> 距離範圍
+            </p>
+            <div className="flex gap-3">
+              {DISTANCE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setDistance(distance === opt.value ? 0 : opt.value)}
+                  className={`flex-1 py-4 rounded-2xl font-black transition-all text-sm ${
+                    distance === opt.value
+                      ? 'bg-orange-500 text-white shadow-xl scale-105'
+                      : 'bg-slate-50 text-slate-400'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Price */}
           <div>
             <p className="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">
               預算範圍
@@ -56,6 +86,7 @@ export default function FilterModal() {
               ))}
             </div>
           </div>
+          {/* Tags */}
           <div>
             <p className="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">
               特別需求

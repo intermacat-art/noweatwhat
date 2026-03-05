@@ -11,7 +11,10 @@ export default function AppShell() {
   const isDetailPage = location.pathname.startsWith('/restaurant');
   const isCheckInPage = location.pathname.startsWith('/checkin');
   const isSettingsPage = location.pathname.startsWith('/settings');
-  const hideNav = isSharePage || isDetailPage || isCheckInPage || isSettingsPage;
+  const isWeeklyPage = location.pathname.startsWith('/profile/weekly');
+  const isFoodMapPage = location.pathname.startsWith('/profile/foodmap');
+  const isPersonalityPage = location.pathname.startsWith('/profile/personality');
+  const hideNav = isSharePage || isDetailPage || isCheckInPage || isSettingsPage || isWeeklyPage || isFoodMapPage || isPersonalityPage;
 
   return (
     <div className="flex flex-col h-screen bg-app max-w-md mx-auto shadow-2xl font-sans overflow-hidden border-x border-warm-200/50 relative">

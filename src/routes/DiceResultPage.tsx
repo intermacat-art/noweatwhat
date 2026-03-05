@@ -6,6 +6,7 @@ import { useFilterStore } from '../stores/filterStore';
 import { useCoords, useLocationStore } from '../stores/locationStore';
 import { useChallengeStore } from '../stores/challengeStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
+import { useDiceStore } from '../stores/diceStore';
 import type { CategoryName, Restaurant } from '../data/types';
 
 export default function DiceResultPage() {
@@ -19,6 +20,7 @@ export default function DiceResultPage() {
   const [challengeRecorded, setChallengeRecorded] = useState(false);
   const { lat, lng } = useCoords();
   const locationReady = useLocationStore((s) => s.ready);
+  const addRoll = useDiceStore((s) => s.addRoll);
 
   const [rolling, setRolling] = useState(true);
   const [diceEmoji, setDiceEmoji] = useState('🎲');
@@ -103,6 +105,8 @@ export default function DiceResultPage() {
   };
 
   const handleAccept = (rest: Restaurant) => {
+    // Record dice roll
+    addRoll({ category: rest.category, restaurantName: rest.name });
     // Record challenge day if in challenge mode
     if (isChallenge && challengeActive && !getTodayEntry() && !challengeRecorded) {
       addDay({

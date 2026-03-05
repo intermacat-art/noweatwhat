@@ -83,6 +83,7 @@ export interface VisitHistory {
   actualCost?: number;
   moodTags?: string[];
   quote?: string;
+  coordinates?: { lat: number; lng: number };
 }
 
 export const MOOD_TAG_OPTIONS = [

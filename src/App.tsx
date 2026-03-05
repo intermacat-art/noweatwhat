@@ -13,6 +13,9 @@ import CheckInPage from './routes/CheckInPage';
 import SettingsPage from './routes/SettingsPage';
 import SearchPage from './routes/SearchPage';
 import ChallengePage from './routes/ChallengePage';
+import WeeklyReportPage from './routes/WeeklyReportPage';
+import FoodMapPage from './routes/FoodMapPage';
+import FoodPersonalityPage from './routes/FoodPersonalityPage';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -45,6 +48,9 @@ export default function App() {
           <Route path="checkin/:restaurantId" element={<CheckInPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="challenge" element={<ChallengePage />} />
+          <Route path="profile/weekly" element={<WeeklyReportPage />} />
+          <Route path="profile/foodmap" element={<FoodMapPage />} />
+          <Route path="profile/personality" element={<FoodPersonalityPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

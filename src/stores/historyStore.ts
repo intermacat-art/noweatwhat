@@ -12,6 +12,7 @@ interface CheckInData {
   actualCost?: number;
   moodTags?: string[];
   quote?: string;
+  coordinates?: { lat: number; lng: number };
 }
 
 interface HistoryState {
@@ -58,6 +59,7 @@ export const useHistoryStore = create<HistoryState>()(
               count: 1,
               cost: restaurant.priceLevel * 250,
               image: restaurant.image,
+              coordinates: restaurant.coordinates,
             },
             ...s.visits,
           ],
@@ -80,6 +82,7 @@ export const useHistoryStore = create<HistoryState>()(
               actualCost: data.actualCost,
               moodTags: data.moodTags,
               quote: data.quote,
+              coordinates: data.coordinates,
             },
             ...s.visits,
           ],

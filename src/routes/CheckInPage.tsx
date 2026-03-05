@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Camera, ChevronRight, Check } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useHistoryStore } from '../stores/historyStore';
@@ -11,11 +11,13 @@ import MoodTags from '../components/profile/MoodTags';
 export default function CheckInPage() {
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const addCheckIn = useHistoryStore((s) => s.addCheckIn);
 
+  const stateRestaurant = (location.state as { restaurant?: typeof mockRestaurants[0] })?.restaurant;
   const restaurant = restaurantId
     ? mockRestaurants.find((r) => r.id === Number(restaurantId))
-    : null;
+    : stateRestaurant ?? null;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export default function CheckInPage() {
         photoId,
         actualCost: amount ?? undefined,
         moodTags: moodTags.length > 0 ? moodTags : undefined,
+        coordinates: restaurant?.coordinates,
       });
 
       navigate('/profile');

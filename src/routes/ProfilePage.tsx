@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Share2, CheckCircle2, PieChart, LogOut, Plus, Star, Settings } from 'lucide-react';
+import { Share2, CheckCircle2, PieChart, LogOut, Plus, Star, Settings, CalendarDays, MapPin, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useHistoryStore } from '../stores/historyStore';
 import { useAuthStore } from '../stores/authStore';
@@ -71,31 +71,55 @@ export default function ProfilePage() {
       </div>
 
       {/* Actions */}
-      <div className="px-8 flex gap-3 mb-10">
+      <div className="px-8 space-y-3 mb-10">
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate('/checkin')}
+            className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg active:scale-95 transition-all"
+          >
+            <Plus size={18} className="mr-2" /> 新增紀錄
+          </button>
+          <button
+            onClick={() => navigate('/profile/report')}
+            className="flex-1 bg-orange-500 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg shadow-orange-200 active:scale-95 transition-all"
+          >
+            <PieChart size={18} className="mr-2" /> 月報分析
+          </button>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate('/profile/weekly')}
+            className="flex-1 bg-gradient-to-r from-orange-400 to-pink-400 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg active:scale-95 transition-all"
+          >
+            <CalendarDays size={18} className="mr-2" /> 週報
+          </button>
+          <button
+            onClick={() => navigate('/profile/foodmap')}
+            className="flex-1 bg-gradient-to-r from-emerald-400 to-teal-400 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg active:scale-95 transition-all"
+          >
+            <MapPin size={18} className="mr-2" /> 美食地圖
+          </button>
+        </div>
         <button
-          onClick={() => navigate('/checkin')}
-          className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg active:scale-95 transition-all"
+          onClick={() => navigate('/profile/personality')}
+          className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg shadow-purple-200 active:scale-95 transition-all"
         >
-          <Plus size={18} className="mr-2" /> 新增紀錄
+          <Sparkles size={18} className="mr-2" /> 美食人格
         </button>
-        <button
-          onClick={() => navigate('/profile/report')}
-          className="flex-1 bg-orange-500 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg shadow-orange-200 active:scale-95 transition-all"
-        >
-          <PieChart size={18} className="mr-2" /> 月報分析
-        </button>
-        <button
-          onClick={() => navigate('/settings')}
-          className="bg-slate-100 text-slate-400 px-5 py-4 rounded-2xl font-bold active:scale-95 transition-all"
-        >
-          <Settings size={18} />
-        </button>
-        <button
-          onClick={handleLogout}
-          className="bg-slate-100 text-slate-400 px-5 py-4 rounded-2xl font-bold active:scale-95 transition-all"
-        >
-          <LogOut size={18} />
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate('/settings')}
+            className="flex-1 bg-slate-100 text-slate-400 py-4 rounded-2xl font-bold flex items-center justify-center active:scale-95 transition-all"
+          >
+            <Settings size={18} className="mr-2" /> 設定
+          </button>
+          <button
+            onClick={handleLogout}
+            className="bg-slate-100 text-slate-400 px-5 py-4 rounded-2xl font-bold active:scale-95 transition-all"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
       </div>
 
       {/* History */}

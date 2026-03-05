@@ -72,7 +72,8 @@ export async function searchNearby(
   if (!response.ok) throw new Error('Failed to fetch nearby places');
 
   const data = await response.json();
-  const results = (data.places as GooglePlace[]).map((place, idx) => {
+  const openPlaces = (data.places as GooglePlace[]).filter((place) => place.openNow !== false);
+  const results = openPlaces.map((place, idx) => {
     const pl = priceLevelToNumber(place.priceLevel);
     const dm = distanceMeters(lat, lng, place.location.latitude, place.location.longitude);
     return {
@@ -100,6 +101,47 @@ export async function searchNearby(
   // Sort by distance, nearest first
   results.sort((a, b) => a.distanceMeters! - b.distanceMeters!);
   return results;
+}
+
+export function getStaticMapUrl(
+  coords: { lat: number; lng: number }[],
+  options: { width?: number; height?: number; zoom?: number } = {}
+): string {
+  if (coords.length === 0) return '';
+
+  const { width = 600, height = 300 } = options;
+
+  // Calculate center
+  const centerLat = coords.reduce((s, c) => s + c.lat, 0) / coords.length;
+  const centerLng = coords.reduce((s, c) => s + c.lng, 0) / coords.length;
+
+  // Auto-calculate zoom if not provided
+  let zoom = options.zoom;
+  if (zoom == null) {
+    if (coords.length === 1) {
+      zoom = 15;
+    } else {
+      const latSpan = Math.max(...coords.map((c) => c.lat)) - Math.min(...coords.map((c) => c.lat));
+      const lngSpan = Math.max(...coords.map((c) => c.lng)) - Math.min(...coords.map((c) => c.lng));
+      const maxSpan = Math.max(latSpan, lngSpan);
+      if (maxSpan > 0.5) zoom = 10;
+      else if (maxSpan > 0.1) zoom = 12;
+      else if (maxSpan > 0.02) zoom = 14;
+      else zoom = 15;
+    }
+  }
+
+  // Build markers string: color:red|lat,lng|lat,lng
+  const markers = 'color:red|' + coords.map((c) => `${c.lat},${c.lng}`).join('|');
+
+  const params = new URLSearchParams({
+    center: `${centerLat},${centerLng}`,
+    zoom: String(zoom),
+    size: `${width}x${height}`,
+    markers,
+  });
+
+  return `/api/maps/static?${params}`;
 }
 
 export async function getDetail(placeId: string): Promise<GooglePlaceDetail> {

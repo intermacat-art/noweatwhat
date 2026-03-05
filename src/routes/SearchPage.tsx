@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Star, Car, Clock, Filter as FilterIcon } from 'lucide-react';
+import { ChevronRight, Star, Car, Clock, Filter as FilterIcon, Dice5 } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords, useLocationStore } from '../stores/locationStore';
@@ -104,8 +104,15 @@ export default function SearchPage() {
           篩選結果
         </h2>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => navigate('/dice-result')}
           className="p-2 bg-orange-500 text-white rounded-xl shadow-sm"
+          title="骰餐廳"
+        >
+          <Dice5 size={18} />
+        </button>
+        <button
+          onClick={() => setShowModal(true)}
+          className="p-2 bg-slate-100 text-slate-500 rounded-xl shadow-sm"
         >
           <FilterIcon size={18} />
         </button>

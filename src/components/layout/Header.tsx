@@ -1,4 +1,4 @@
-import { MapPin, Filter as FilterIcon, User, Locate } from 'lucide-react';
+import { MapPin, Filter as FilterIcon, User, Locate, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFilterStore } from '../../stores/filterStore';
 import { useLocationStore } from '../../stores/locationStore';
@@ -7,7 +7,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { setShowModal, hasActiveFilters } = useFilterStore();
   const active = hasActiveFilters();
-  const { lat, loading, requestLocation } = useLocationStore();
+  const { lat, loading, error, requestLocation } = useLocationStore();
   const hasLocation = lat !== null;
 
   return (
@@ -25,15 +25,21 @@ export default function Header() {
         >
           {loading ? (
             <>
-              <Locate size={10} className="mr-1 text-orange-500 animate-pulse" /> 定位中...
+              <Locate size={10} className="mr-1 text-orange-500 animate-spin" /> 定位中...
+            </>
+          ) : error ? (
+            <>
+              <AlertCircle size={10} className="mr-1 text-red-500" />
+              <span className="text-red-500">{error}</span>
+              <span className="ml-1 text-orange-500 underline">重試</span>
             </>
           ) : hasLocation ? (
             <>
-              <MapPin size={10} className="mr-1 text-green-500" /> GPS 已定位 · 搜尋附近
+              <MapPin size={10} className="mr-1 text-green-500" /> GPS 已定位
             </>
           ) : (
             <>
-              <MapPin size={10} className="mr-1 text-orange-500" /> 點擊定位 · 搜尋附近
+              <MapPin size={10} className="mr-1 text-orange-500" /> 點擊定位
             </>
           )}
         </button>

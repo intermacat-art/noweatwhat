@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronRight, Star, Car, MapPin, Clock } from 'lucide-react';
+import { ChevronRight, Star, Car, MapPin, Clock, Dice5 } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords, useLocationStore } from '../stores/locationStore';
@@ -86,9 +86,16 @@ export default function ListPage() {
         >
           <ChevronRight className="rotate-180" size={18} />
         </button>
-        <h2 className="text-xl font-black text-slate-800 tracking-tighter">
+        <h2 className="text-xl font-black text-slate-800 tracking-tighter flex-1">
           附近的 {category} 料理
         </h2>
+        <button
+          onClick={() => navigate(`/dice-result?category=${encodeURIComponent(category)}`)}
+          className="p-2 bg-orange-500 text-white rounded-xl shadow-sm"
+          title="骰餐廳"
+        >
+          <Dice5 size={18} />
+        </button>
       </div>
 
       {!useGoogle && !loading && (

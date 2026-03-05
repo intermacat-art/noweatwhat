@@ -1,31 +1,36 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Star, ChevronRight } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords, useLocationStore } from '../stores/locationStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
-import type { Restaurant } from '../data/types';
+import type { CategoryName, Restaurant } from '../data/types';
 
 export default function DiceResultPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category') as CategoryName | null;
+
   const { price, tags, distance } = useFilterStore();
   const { lat, lng } = useCoords();
+  const locationReady = useLocationStore((s) => s.ready);
+
   const [rolling, setRolling] = useState(true);
   const [diceEmoji, setDiceEmoji] = useState('🎲');
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Restaurant | null>(null);
 
-  const locationReady = useLocationStore((s) => s.ready);
   const searchRadius = distance > 0 ? distance : 1500;
 
-  // Fetch nearby restaurants on mount
+  // Fetch nearby restaurants — optionally filtered by category
   useEffect(() => {
     if (!locationReady) return;
     let cancelled = false;
     setLoading(true);
-    searchNearby(lat, lng, undefined, searchRadius)
+    setSelected(null);
+    searchNearby(lat, lng, categoryParam ?? undefined, searchRadius)
       .then((places) => {
         if (!cancelled) {
           setRestaurants(places);
@@ -34,17 +39,18 @@ export default function DiceResultPage() {
       })
       .catch(() => {
         if (!cancelled) {
-          // Fallback to mock data with distance
-          const mock = mockRestaurants.map((r) => ({
-            ...r,
-            distanceMeters: distanceMeters(lat, lng, r.coordinates.lat, r.coordinates.lng),
-          }));
+          const mock = mockRestaurants
+            .filter((r) => !categoryParam || r.category === categoryParam)
+            .map((r) => ({
+              ...r,
+              distanceMeters: distanceMeters(lat, lng, r.coordinates.lat, r.coordinates.lng),
+            }));
           setRestaurants(mock);
           setLoading(false);
         }
       });
     return () => { cancelled = true; };
-  }, [lat, lng, searchRadius, locationReady]);
+  }, [lat, lng, searchRadius, locationReady, categoryParam]);
 
   // Filter candidates by price/tags/distance
   const candidates = useMemo(() => {
@@ -56,13 +62,12 @@ export default function DiceResultPage() {
     });
   }, [restaurants, price, tags, distance]);
 
-  // Pick a random restaurant
   const pickRandom = useCallback(() => {
     if (candidates.length === 0) return null;
     return candidates[Math.floor(Math.random() * candidates.length)];
   }, [candidates]);
 
-  // Initial selection after data loads
+  // Initial pick after data loads
   useEffect(() => {
     if (!loading && candidates.length > 0 && !selected) {
       setSelected(pickRandom());
@@ -101,18 +106,20 @@ export default function DiceResultPage() {
     }
   };
 
+  const titleLabel = categoryParam ? `${categoryParam} 料理` : '附近餐廳';
+
   if (!loading && candidates.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
         <p className="text-6xl mb-6">😢</p>
         <p className="text-xl font-black text-slate-800 mb-4">
-          沒有符合條件的餐廳
+          沒有符合條件的{titleLabel}
         </p>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
           className="bg-orange-500 text-white px-8 py-4 rounded-3xl font-black"
         >
-          回首頁
+          返回
         </button>
       </div>
     );
@@ -120,18 +127,29 @@ export default function DiceResultPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full p-8 text-center">
+      {/* Back button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-6 left-6 p-2 bg-white/70 backdrop-blur-sm rounded-xl shadow-sm border border-warm-200/50 z-10"
+      >
+        <ChevronRight className="rotate-180" size={18} />
+      </button>
+
       {(rolling || loading) ? (
         <div className="animate-bounce">
           <p className="text-8xl mb-6">{diceEmoji}</p>
           <p className="text-xl font-black text-slate-800 tracking-tighter">
-            {loading ? '搜尋附近餐廳...' : '命運正在轉動...'}
+            {loading ? `搜尋${titleLabel}...` : '命運正在轉動...'}
           </p>
         </div>
       ) : selected ? (
         <div className="animate-fade-in w-full max-w-sm">
-          <p className="text-sm font-black text-orange-500 uppercase tracking-widest mb-4">
+          <p className="text-sm font-black text-orange-500 uppercase tracking-widest mb-1">
             命運之選
           </p>
+          {categoryParam && (
+            <p className="text-xs font-bold text-slate-400 mb-4">{titleLabel}</p>
+          )}
           <div
             className="bg-white rounded-[40px] overflow-hidden shadow-2xl border border-slate-100 cursor-pointer active:scale-[0.98] transition-all"
             onClick={() => handleNavigate(selected)}

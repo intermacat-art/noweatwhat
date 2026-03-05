@@ -5,7 +5,7 @@ interface LocationState {
   lng: number | null;
   loading: boolean;
   error: string | null;
-  ready: boolean; // true once we have a real or cached position
+  ready: boolean;
   requestLocation: () => void;
 }
 
@@ -20,7 +20,6 @@ function loadCachedLocation(): { lat: number; lng: number } | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const { lat, lng, ts } = JSON.parse(raw);
-    // Cache valid for 24 hours
     if (Date.now() - ts > 24 * 60 * 60 * 1000) return null;
     if (typeof lat === 'number' && typeof lng === 'number') return { lat, lng };
   } catch { /* ignore */ }
@@ -34,7 +33,6 @@ function saveCachedLocation(lat: number, lng: number) {
 }
 
 export const useLocationStore = create<LocationState>((set, get) => {
-  // On store init: load cached location immediately
   const cached = loadCachedLocation();
 
   return {
@@ -46,49 +44,50 @@ export const useLocationStore = create<LocationState>((set, get) => {
     requestLocation: () => {
       if (get().loading) return;
       if (!navigator.geolocation) {
-        set({ lat: DEFAULT_LAT, lng: DEFAULT_LNG, loading: false, error: 'Geolocation not supported', ready: true });
+        set({ lat: DEFAULT_LAT, lng: DEFAULT_LNG, loading: false, error: '此裝置不支援定位', ready: true });
         return;
       }
       set({ loading: true, error: null });
 
-      // Step 1: Fast coarse location (usually <1 sec)
+      // Try high accuracy first with generous timeout
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          set({ lat: latitude, lng: longitude, loading: false, ready: true });
+          set({ lat: latitude, lng: longitude, loading: false, ready: true, error: null });
           saveCachedLocation(latitude, longitude);
-
-          // Step 2: Background high-accuracy update
+        },
+        () => {
+          // High accuracy failed — try low accuracy as fallback
           navigator.geolocation.getCurrentPosition(
-            (precise) => {
-              const { latitude: pLat, longitude: pLng } = precise.coords;
-              set({ lat: pLat, lng: pLng });
-              saveCachedLocation(pLat, pLng);
+            (pos) => {
+              const { latitude, longitude } = pos.coords;
+              set({ lat: latitude, lng: longitude, loading: false, ready: true, error: null });
+              saveCachedLocation(latitude, longitude);
             },
-            () => { /* coarse is good enough */ },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+            (err) => {
+              console.warn('Geolocation error:', err.message);
+              const fallback = loadCachedLocation();
+              set({
+                lat: fallback?.lat ?? DEFAULT_LAT,
+                lng: fallback?.lng ?? DEFAULT_LNG,
+                loading: false,
+                error: err.code === 1 ? '請允許定位權限' : '定位失敗，使用預設位置',
+                ready: true,
+              });
+            },
+            { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }
           );
         },
-        (err) => {
-          console.warn('Geolocation error:', err.message);
-          // Fall back to cache or default
-          const fallback = loadCachedLocation();
-          set({
-            lat: fallback?.lat ?? DEFAULT_LAT,
-            lng: fallback?.lng ?? DEFAULT_LNG,
-            loading: false,
-            error: err.message,
-            ready: true,
-          });
-        },
-        { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
     },
   };
 });
 
-// Auto-request location on store creation
-useLocationStore.getState().requestLocation();
+// Auto-request on app start
+if (typeof window !== 'undefined') {
+  useLocationStore.getState().requestLocation();
+}
 
 export function useCoords() {
   const { lat, lng } = useLocationStore();

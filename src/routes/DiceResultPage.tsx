@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Star, ChevronRight, Flame } from 'lucide-react';
+import { Star, ChevronRight } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords, useLocationStore } from '../stores/locationStore';
-import { useChallengeStore } from '../stores/challengeStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
 import { useDiceStore } from '../stores/diceStore';
 import type { CategoryName, Restaurant } from '../data/types';
@@ -13,11 +12,8 @@ export default function DiceResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get('category') as CategoryName | null;
-  const isChallenge = searchParams.get('challenge') === '1';
 
   const { price, tags, distance } = useFilterStore();
-  const { active: challengeActive, addDay, getTodayEntry } = useChallengeStore();
-  const [challengeRecorded, setChallengeRecorded] = useState(false);
   const { lat, lng } = useCoords();
   const locationReady = useLocationStore((s) => s.ready);
   const addRoll = useDiceStore((s) => s.addRoll);
@@ -105,22 +101,7 @@ export default function DiceResultPage() {
   };
 
   const handleAccept = (rest: Restaurant) => {
-    // Record dice roll
     addRoll({ category: rest.category, restaurantName: rest.name });
-    // Record challenge day if in challenge mode
-    if (isChallenge && challengeActive && !getTodayEntry() && !challengeRecorded) {
-      addDay({
-        restaurantName: rest.name,
-        restaurantImage: rest.image,
-        rating: rest.rating,
-        priceStr: rest.priceStr,
-        dist: rest.dist,
-        placeId: rest.placeId,
-        category: rest.category,
-      });
-      setChallengeRecorded(true);
-    }
-    // Navigate to restaurant
     if (rest.placeId) {
       navigate(`/restaurant/google-${rest.placeId}`, { state: { restaurant: rest } });
     } else {
@@ -206,7 +187,6 @@ export default function DiceResultPage() {
               onClick={() => handleAccept(selected)}
               className="flex-1 bg-orange-500 text-white py-4 rounded-3xl font-black shadow-lg"
             >
-              {isChallenge && <Flame size={16} className="inline mr-1" />}
               就決定是你了
             </button>
           </div>

@@ -1,11 +1,8 @@
-import { Utensils, Flame } from 'lucide-react';
+import { Utensils } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useChallengeStore } from '../../stores/challengeStore';
 
 export default function DiceCard() {
   const navigate = useNavigate();
-  const { active, days, getCurrentStreak, getTodayEntry } = useChallengeStore();
-  const todayDone = getTodayEntry() !== null;
 
   return (
     <div className="px-6 mb-10 space-y-4">
@@ -29,32 +26,6 @@ export default function DiceCard() {
           className="absolute -right-6 -bottom-6 text-white opacity-5 rotate-12"
           size={200}
         />
-      </div>
-
-      {/* Challenge card */}
-      <div
-        onClick={() => navigate('/challenge')}
-        className="bg-gradient-to-r from-orange-500 to-pink-500 p-6 rounded-[32px] text-white shadow-lg relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all"
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Flame size={20} />
-              <span className="font-black text-lg">命運挑戰</span>
-            </div>
-            {active ? (
-              <p className="text-white/80 text-sm font-bold">
-                Day {days.length} · 連續 {getCurrentStreak()} 天
-                {todayDone ? ' · 今日完成 ✓' : ' · 今天還沒骰！'}
-              </p>
-            ) : (
-              <p className="text-white/80 text-sm font-bold">
-                連續每天讓命運決定午餐！
-              </p>
-            )}
-          </div>
-          <span className="text-3xl">{active ? '🔥' : '🎯'}</span>
-        </div>
       </div>
     </div>
   );

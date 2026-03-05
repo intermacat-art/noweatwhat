@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Flame, Trophy, Share2 } from 'lucide-react';
-import { useChallengeStore } from '../stores/challengeStore';
+import { useChallengeStore, type ChallengeDay } from '../stores/challengeStore';
 import { useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 
-function ChallengeCard({ day, isLatest }: { day: typeof import('../stores/challengeStore').ChallengeDay.prototype; isLatest: boolean }) {
+function ChallengeCard({ day, isLatest }: { day: ChallengeDay; isLatest: boolean }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleShare = useCallback(async () => {

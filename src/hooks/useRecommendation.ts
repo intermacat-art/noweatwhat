@@ -13,7 +13,7 @@ interface Recommendation {
  * Analyze user's visit history to generate recommendations
  */
 export function useRecommendation(): Recommendation {
-  const history = useHistoryStore((s) => s.history);
+  const history = useHistoryStore((s) => s.visits);
 
   return useMemo(() => {
     if (history.length === 0) {

@@ -274,11 +274,11 @@ export const mockRestaurants: Restaurant[] = [
       { title: "點水樓必吃排行：不只有小籠包", source: "WalkerLand", date: "2025.12.25" }
     ]
   },
-  // === 麵食 ===
+  // === 牛肉麵 ===
   {
     id: 13,
     name: "林東芳牛肉麵",
-    category: "麵食",
+    category: "牛肉麵",
     rating: 4.6,
     priceLevel: 2,
     priceStr: "$$",
@@ -301,7 +301,7 @@ export const mockRestaurants: Restaurant[] = [
   {
     id: 14,
     name: "永康牛肉麵",
-    category: "麵食",
+    category: "牛肉麵",
     rating: 4.5,
     priceLevel: 2,
     priceStr: "$$",
@@ -320,11 +320,11 @@ export const mockRestaurants: Restaurant[] = [
       { title: "觀光客vs在地人：永康牛肉麵的真實評價", source: "TVBS", date: "2026.01.30" }
     ]
   },
-  // === 飯類 ===
+  // === 便當 ===
   {
     id: 15,
     name: "梁社漢排骨飯",
-    category: "飯類",
+    category: "便當",
     rating: 4.3,
     priceLevel: 1,
     priceStr: "$",
@@ -344,7 +344,7 @@ export const mockRestaurants: Restaurant[] = [
   {
     id: 16,
     name: "金峰滷肉飯",
-    category: "飯類",
+    category: "便當",
     rating: 4.6,
     priceLevel: 1,
     priceStr: "$",

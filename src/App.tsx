@@ -12,6 +12,9 @@ import MonthlyReportPage from './routes/MonthlyReportPage';
 import CheckInPage from './routes/CheckInPage';
 import SettingsPage from './routes/SettingsPage';
 import SearchPage from './routes/SearchPage';
+import ChallengePage from './routes/ChallengePage';
+import VoteCreatePage from './routes/VoteCreatePage';
+import VotePage from './routes/VotePage';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -24,6 +27,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        {/* Public vote page — no auth required */}
+        <Route path="/vote/:id" element={<VotePage />} />
         <Route
           path="/"
           element={
@@ -43,6 +48,8 @@ export default function App() {
           <Route path="checkin" element={<CheckInPage />} />
           <Route path="checkin/:restaurantId" element={<CheckInPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="challenge" element={<ChallengePage />} />
+          <Route path="vote/create" element={<VoteCreatePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

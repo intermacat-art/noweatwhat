@@ -43,6 +43,25 @@ create index if not exists idx_restaurant_cache_cached_at
 create index if not exists idx_search_area_cached_at
   on search_area_cache (cached_at);
 
+-- ============================================
+-- Group voting tables
+-- ============================================
+
+create table if not exists votes (
+  id bigint generated always as identity primary key,
+  vote_id text not null unique,
+  title text default '今天吃什麼？',
+  creator_name text default '匿名',
+  options jsonb not null,              -- [{name, image, rating, dist, placeId}]
+  votes jsonb default '{}'::jsonb,     -- {"0": ["Alice","Bob"], "1": ["Charlie"]}
+  created_at timestamptz default now(),
+  expires_at timestamptz
+);
+
+create index if not exists idx_votes_vote_id on votes (vote_id);
+create index if not exists idx_votes_created_at on votes (created_at);
+
 -- Auto-cleanup old cache (optional — run as a cron job or Supabase Edge Function)
 -- DELETE FROM restaurant_cache WHERE cached_at < now() - interval '7 days';
 -- DELETE FROM search_area_cache WHERE cached_at < now() - interval '1 day';
+-- DELETE FROM votes WHERE expires_at < now();

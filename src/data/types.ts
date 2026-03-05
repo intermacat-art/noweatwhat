@@ -1,14 +1,16 @@
-export type CategoryName = '日式' | '中式' | '牛排' | '吃到飽' | '法式' | '麵食' | '飯類' | '小吃';
+export type CategoryName = '日式' | '中式' | '牛排' | '吃到飽' | '法式' | '便當' | '丼飯' | '拉麵' | '牛肉麵' | '小吃';
 
 export const CATEGORY_KEYWORD_MAP: Record<CategoryName, string> = {
-  '日式': 'japanese restaurant',
-  '中式': 'chinese restaurant',
-  '牛排': 'steakhouse',
-  '吃到飽': 'buffet',
-  '法式': 'french restaurant',
-  '麵食': 'noodle restaurant',
-  '飯類': 'rice restaurant',
-  '小吃': 'street food',
+  '日式': '日式料理 日本料理',
+  '中式': '中式餐廳 中華料理',
+  '牛排': '牛排館 牛排餐廳',
+  '吃到飽': '吃到飽 buffet',
+  '法式': '法式餐廳 法國料理',
+  '便當': '便當 自助餐 快餐',
+  '丼飯': '丼飯 蓋飯 燴飯',
+  '拉麵': '拉麵 日式拉麵',
+  '牛肉麵': '牛肉麵 麵店',
+  '小吃': '小吃 滷味 鹹酥雞 夜市',
 };
 
 export type RestaurantTag = 'date' | 'pet';

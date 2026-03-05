@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Star, ChevronRight } from 'lucide-react';
+import { Star, ChevronRight, Flame } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
 import { useCoords, useLocationStore } from '../stores/locationStore';
+import { useChallengeStore } from '../stores/challengeStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
 import type { CategoryName, Restaurant } from '../data/types';
 
@@ -11,8 +12,11 @@ export default function DiceResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get('category') as CategoryName | null;
+  const isChallenge = searchParams.get('challenge') === '1';
 
   const { price, tags, distance } = useFilterStore();
+  const { active: challengeActive, addDay, getTodayEntry } = useChallengeStore();
+  const [challengeRecorded, setChallengeRecorded] = useState(false);
   const { lat, lng } = useCoords();
   const locationReady = useLocationStore((s) => s.ready);
 
@@ -98,7 +102,21 @@ export default function DiceResultPage() {
     setTimeout(() => setRolling(false), 2000);
   };
 
-  const handleNavigate = (rest: Restaurant) => {
+  const handleAccept = (rest: Restaurant) => {
+    // Record challenge day if in challenge mode
+    if (isChallenge && challengeActive && !getTodayEntry() && !challengeRecorded) {
+      addDay({
+        restaurantName: rest.name,
+        restaurantImage: rest.image,
+        rating: rest.rating,
+        priceStr: rest.priceStr,
+        dist: rest.dist,
+        placeId: rest.placeId,
+        category: rest.category,
+      });
+      setChallengeRecorded(true);
+    }
+    // Navigate to restaurant
     if (rest.placeId) {
       navigate(`/restaurant/google-${rest.placeId}`, { state: { restaurant: rest } });
     } else {
@@ -152,7 +170,7 @@ export default function DiceResultPage() {
           )}
           <div
             className="bg-white rounded-[40px] overflow-hidden shadow-2xl border border-slate-100 cursor-pointer active:scale-[0.98] transition-all"
-            onClick={() => handleNavigate(selected)}
+            onClick={() => handleAccept(selected)}
           >
             <img
               src={selected.image}
@@ -181,9 +199,10 @@ export default function DiceResultPage() {
               🎲 再骰一次
             </button>
             <button
-              onClick={() => handleNavigate(selected)}
+              onClick={() => handleAccept(selected)}
               className="flex-1 bg-orange-500 text-white py-4 rounded-3xl font-black shadow-lg"
             >
+              {isChallenge && <Flame size={16} className="inline mr-1" />}
               就決定是你了
             </button>
           </div>

@@ -5,7 +5,7 @@ export default function CategoryGrid() {
   const navigate = useNavigate();
 
   return (
-    <div className="grid grid-cols-4 gap-3 p-6">
+    <div className="grid grid-cols-5 gap-3 p-6">
       {categories.map((cat) => (
         <button
           key={cat.name}

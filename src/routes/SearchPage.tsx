@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Star, Car, Clock, Filter as FilterIcon } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
-import { useCoords } from '../stores/locationStore';
+import { useCoords, useLocationStore } from '../stores/locationStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
 import type { Restaurant } from '../data/types';
 
@@ -26,6 +26,7 @@ export default function SearchPage() {
   const navigate = useNavigate();
   const { price, tags, distance, setShowModal } = useFilterStore();
   const { lat, lng } = useCoords();
+  const locationReady = useLocationStore((s) => s.ready);
 
   // Use distance filter as API radius, default 1500m
   const searchRadius = distance > 0 ? distance : 1500;
@@ -35,6 +36,7 @@ export default function SearchPage() {
   const [useGoogle, setUseGoogle] = useState(true);
 
   useEffect(() => {
+    if (!locationReady) return;
     let cancelled = false;
     setLoading(true);
     searchNearby(lat, lng, undefined, searchRadius)
@@ -52,7 +54,7 @@ export default function SearchPage() {
         }
       });
     return () => { cancelled = true; };
-  }, [lat, lng, searchRadius]);
+  }, [lat, lng, searchRadius, locationReady]);
 
   const mockFiltered = useMemo(() => {
     return mockRestaurants

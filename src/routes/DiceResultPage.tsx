@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
-import { useCoords } from '../stores/locationStore';
+import { useCoords, useLocationStore } from '../stores/locationStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
 import type { Restaurant } from '../data/types';
 
@@ -17,10 +17,12 @@ export default function DiceResultPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Restaurant | null>(null);
 
+  const locationReady = useLocationStore((s) => s.ready);
   const searchRadius = distance > 0 ? distance : 1500;
 
   // Fetch nearby restaurants on mount
   useEffect(() => {
+    if (!locationReady) return;
     let cancelled = false;
     setLoading(true);
     searchNearby(lat, lng, undefined, searchRadius)
@@ -42,7 +44,7 @@ export default function DiceResultPage() {
         }
       });
     return () => { cancelled = true; };
-  }, [lat, lng, searchRadius]);
+  }, [lat, lng, searchRadius, locationReady]);
 
   // Filter candidates by price/tags/distance
   const candidates = useMemo(() => {

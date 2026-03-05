@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronRight, Star, Car, MapPin, Clock } from 'lucide-react';
 import { mockRestaurants } from '../data/restaurants';
 import { useFilterStore } from '../stores/filterStore';
-import { useCoords } from '../stores/locationStore';
+import { useCoords, useLocationStore } from '../stores/locationStore';
 import { searchNearby, distanceMeters } from '../services/placesService';
 import type { CategoryName, Restaurant } from '../data/types';
 
@@ -28,12 +28,14 @@ export default function ListPage() {
   const { price, tags } = useFilterStore();
   const category = name as CategoryName;
   const { lat, lng } = useCoords();
+  const locationReady = useLocationStore((s) => s.ready);
 
   const [googlePlaces, setGooglePlaces] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [useGoogle, setUseGoogle] = useState(true);
 
   useEffect(() => {
+    if (!locationReady) return;
     let cancelled = false;
     setLoading(true);
     searchNearby(lat, lng, category)
@@ -51,7 +53,7 @@ export default function ListPage() {
         }
       });
     return () => { cancelled = true; };
-  }, [lat, lng, category]);
+  }, [lat, lng, category, locationReady]);
 
   // Fallback to mock data if Google fails — also sort by distance
   const mockFiltered = useMemo(() => {

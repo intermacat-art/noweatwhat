@@ -76,7 +76,7 @@ function computeStats(visits: VisitHistory[], rolls: DiceRoll[]): PersonalitySta
 
 export function calculatePersonality(visits: VisitHistory[], rolls: DiceRoll[]): PersonalityResult {
   const stats = computeStats(visits, rolls);
-  const { totalVisits, diceCount, categoryCount, newRate, avgCost, topCategory, topMoodTag } = stats;
+  const { totalVisits, diceCount, categoryCount, newRate, avgCost, topMoodTag } = stats;
 
   // Not enough data
   if (totalVisits < 3) {

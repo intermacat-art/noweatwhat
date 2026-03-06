@@ -4,6 +4,7 @@ import { ChevronRight, ChevronLeft, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useHistoryStore } from '../stores/historyStore';
 import { useDiceStore, getMonday } from '../stores/diceStore';
+import { useEggStore } from '../stores/eggStore';
 import { getStaticMapUrl } from '../services/placesService';
 
 export default function WeeklyReportPage() {
@@ -11,7 +12,9 @@ export default function WeeklyReportPage() {
   const visits = useHistoryStore((s) => s.visits);
   const { getWeekRolls } = useDiceStore();
   const [weekOffset, setWeekOffset] = useState(0);
+  const addEnergy = useEggStore((s) => s.addEnergy);
   const cardRef = useRef<HTMLDivElement>(null);
+  const sharedRef = useRef(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [sharing, setSharing] = useState(false);
 
@@ -114,12 +117,16 @@ export default function WeeklyReportPage() {
         a.download = '現在要吃啥-週報.png';
         a.click();
       }
+      if (!sharedRef.current) {
+        sharedRef.current = true;
+        addEnergy(1);
+      }
     } catch {
       // User cancelled or error
     } finally {
       setSharing(false);
     }
-  }, [weekLabel]);
+  }, [weekLabel, addEnergy]);
 
   const hasData = weekVisits.length > 0 || diceCount > 0;
 

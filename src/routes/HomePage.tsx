@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import CategoryGrid from '../components/home/CategoryGrid';
+import EggCard from '../components/home/EggCard';
 import DiceCard from '../components/home/DiceCard';
 import { useRecommendation } from '../hooks/useRecommendation';
 
@@ -29,6 +30,7 @@ export default function HomePage() {
       )}
 
       <CategoryGrid />
+      <EggCard />
       <DiceCard />
 
     </main>

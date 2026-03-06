@@ -4,13 +4,16 @@ import { ChevronRight, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useHistoryStore } from '../stores/historyStore';
 import { useDiceStore } from '../stores/diceStore';
+import { useEggStore } from '../stores/eggStore';
 import { calculatePersonality } from '../utils/foodPersonality';
 
 export default function FoodPersonalityPage() {
   const navigate = useNavigate();
   const visits = useHistoryStore((s) => s.visits);
   const rolls = useDiceStore((s) => s.rolls);
+  const addEnergy = useEggStore((s) => s.addEnergy);
   const cardRef = useRef<HTMLDivElement>(null);
+  const sharedRef = useRef(false);
   const [sharing, setSharing] = useState(false);
 
   const result = useMemo(() => calculatePersonality(visits, rolls), [visits, rolls]);
@@ -54,12 +57,16 @@ export default function FoodPersonalityPage() {
         a.download = '現在要吃啥-美食人格.png';
         a.click();
       }
+      if (!sharedRef.current) {
+        sharedRef.current = true;
+        addEnergy(1);
+      }
     } catch {
       // User cancelled or error
     } finally {
       setSharing(false);
     }
-  }, [result.name]);
+  }, [result.name, addEnergy]);
 
   const insufficientData = visits.length < 3;
 

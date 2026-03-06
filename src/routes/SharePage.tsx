@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Download, Star } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useHistoryStore } from '../stores/historyStore';
+import { useEggStore } from '../stores/eggStore';
 import { getPhoto } from '../services/photoStorage';
 
 function ShareStars({ rating }: { rating: number }) {
@@ -24,7 +25,9 @@ export default function SharePage() {
   const navigate = useNavigate();
   const visits = useHistoryStore((s) => s.visits);
   const visit = visits.find((v) => v.id === historyId);
+  const addEnergy = useEggStore((s) => s.addEnergy);
   const cardRef = useRef<HTMLDivElement>(null);
+  const sharedRef = useRef(false);
   const [quote, setQuote] = useState('');
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
 
@@ -73,6 +76,10 @@ export default function SharePage() {
         a.href = dataUrl;
         a.download = '現在要吃啥-分享.png';
         a.click();
+      }
+      if (!sharedRef.current) {
+        sharedRef.current = true;
+        addEnergy(1);
       }
     } catch {
       // User cancelled share or error

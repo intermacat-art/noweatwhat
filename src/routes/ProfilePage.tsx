@@ -100,12 +100,20 @@ export default function ProfilePage() {
             <MapPin size={18} className="mr-2" /> 美食地圖
           </button>
         </div>
-        <button
-          onClick={() => navigate('/profile/personality')}
-          className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg shadow-purple-200 active:scale-95 transition-all"
-        >
-          <Sparkles size={18} className="mr-2" /> 美食人格
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate('/profile/personality')}
+            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg shadow-purple-200 active:scale-95 transition-all"
+          >
+            <Sparkles size={18} className="mr-2" /> 美食人格
+          </button>
+          <button
+            onClick={() => navigate('/profile/zoo')}
+            className="flex-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg shadow-orange-200 active:scale-95 transition-all"
+          >
+            🏠 我的動物園
+          </button>
+        </div>
         <div className="flex gap-3">
           <button
             onClick={() => navigate('/settings')}

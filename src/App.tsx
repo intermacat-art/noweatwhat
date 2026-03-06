@@ -15,6 +15,7 @@ import SearchPage from './routes/SearchPage';
 import WeeklyReportPage from './routes/WeeklyReportPage';
 import FoodMapPage from './routes/FoodMapPage';
 import FoodPersonalityPage from './routes/FoodPersonalityPage';
+import ZooPage from './routes/ZooPage';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="profile/weekly" element={<WeeklyReportPage />} />
           <Route path="profile/foodmap" element={<FoodMapPage />} />
           <Route path="profile/personality" element={<FoodPersonalityPage />} />
+          <Route path="profile/zoo" element={<ZooPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

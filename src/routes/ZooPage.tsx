@@ -93,7 +93,13 @@ export default function ZooPage() {
                     : 'border-warm-200/50'
                 }`}
               >
-                <div className="text-5xl mb-2">{h.creature.emoji}</div>
+                <div className={`text-5xl mb-2 inline-block ${
+                  h.rarity === 'legendary'
+                    ? 'creature-idle-legendary'
+                    : h.rarity === 'rare'
+                    ? 'creature-idle-rare'
+                    : 'creature-idle'
+                }`}>{h.creature.emoji}</div>
                 <p className="font-black text-sm text-slate-800 tracking-tight mb-0.5">
                   {h.creature.name}
                 </p>

@@ -51,8 +51,16 @@ function HatchModal({
 
         {/* Creature reveal */}
         {(phase === 'reveal' || phase === 'done') && (
-          <div className="animate-creature-bounce">
-            <div className="text-[120px] leading-none mb-4 drop-shadow-2xl">
+          <div className={phase === 'done' ? '' : 'animate-creature-bounce'}>
+            <div className={`text-[120px] leading-none mb-4 drop-shadow-2xl ${
+              phase === 'done'
+                ? hatched.rarity === 'legendary'
+                  ? 'creature-idle-legendary'
+                  : hatched.rarity === 'rare'
+                  ? 'creature-idle-rare'
+                  : 'creature-idle'
+                : ''
+            }`}>
               {hatched.creature.emoji}
             </div>
             <h3 className="text-3xl font-black text-white mb-1 tracking-tight">
